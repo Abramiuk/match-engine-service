@@ -1,0 +1,32 @@
+asyncapi: 2.6.0
+info:
+  title: Match Engine Async Events
+  version: 1.0.0
+servers:
+  rabbitmq:
+    url: amqp://localhost:5672
+    protocol: amqp
+channels:
+  match.events:
+    publish:
+      summary: Emit events when match status changes
+      message:
+        oneOf:
+          - $ref: '#/components/messages/MatchStarted'
+          - $ref: '#/components/messages/MatchFinished'
+components:
+  messages:
+    MatchFinished:
+      name: MatchFinishedEvent
+      payload:
+        type: object
+        properties:
+          match_id:
+            type: string
+            format: uuid
+          winner_team_id:
+            type: string
+            format: uuid
+          final_score:
+            type: string
+            example: "13:9"

@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: match_engine_fastapi
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_NAME=matchengine
+      - RMQ_URL=amqp://guest:guest@rabbitmq/
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - esports-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: match_engine_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=matchengine
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - esports-network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: match_engine_rmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - esports-network
+
+networks:
+  esports-network:
+    driver: bridge
+
+volumes:
+  pgdata:

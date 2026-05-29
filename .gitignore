@@ -1,0 +1,14 @@
+@"
+# Environments
+.env
+.venv
+env/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Docker
+.docker/
+"@ | Out-File -FilePath .gitignore -Encoding utf8

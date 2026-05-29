@@ -1,0 +1,36 @@
+openapi: 3.0.3
+info:
+  title: Match Engine Service API (Sync)
+  version: 1.0.0
+paths:
+  /matches:
+    post:
+      summary: Create a new match
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchCreate'
+      responses:
+        '201':
+          description: Match created successfully
+  /matches/{match_id}/results:
+    post:
+      summary: Submit match result
+      parameters:
+        - name: match_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResultSubmit'
+      responses:
+        '200':
+          description: Result processed and events published
